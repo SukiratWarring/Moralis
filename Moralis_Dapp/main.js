@@ -49,73 +49,7 @@ getTransactions = async () => {
           </tbody>
         </table>
         `
-        getBalances = async () => {
-            console.log("Get balances clicked");
-            const ethbalance = await Moralis.Web3API.account.getNativeBalance({ chain: "ropsten" });
-            const ropstenbalance = await Moralis.Web3API.account.getNativeBalance({ chain: "ropsten" });
-            const rinkebybalance = await Moralis.Web3API.account.getNativeBalance({ chain: "ropsten" });
-            console.log((ethbalance.balance / 1e18).toFixed(5) + "ETH");
-            console.log((ropstenbalance.balance / 1e18).toFixed(5) + "ETH");
-            console.log((rinkebybalance.balance / 1e18).toFixed(5) + "ETH");
-
-            let content = document.querySelector('userBalances').innerHTML = `
-            <table class="table">
-            <thead>
-            <tr>
-              <th scope ="col">Chain</th>
-              <th scope ="col">Balance</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <tr>
-                    <th>Ether</th>
-                    <td>${(ethbalance.balance / 1e18).toFixed(5)} ETH</td>
-                </tr>
-                <tr>
-                    <th>Ropsten</th>
-                    <td>${(ropstenbalance.balance / 1e18).toFixed(5)} ETH</td>
-                </tr>
-                <tr>
-                    <th>Rinkeby</th>
-                    <td>${(rinkebybalance.balance / 1e18).toFixed(5)} ETH</td>
-                </tr>
-            </tr>
-            </tbody>
-          </table>            `
-        }
-        getNFTs = async () => {
-            console.log('get nfts clicked');
-            let nfts = await Moralis.Web3API.account.getNFTs({ chain: "rinkeby" })
-            console.log(nfts)
-            let tableofnfts= document.querySelector("#tableofnfts")
-            if (nfts.result.length > 0) {
-                nfts.result.forEach(n => {
-                    let metadata = console.log(JSON.parse(n.metadata))
-                    let content = `
-                    <div class="card col-md-3" >
-                    <img src="${fixURl(metadata.image_url)}" class="card-img-top">
-                    <div class="card-body">
-                         <h5 class="card-title">${metadata.name}</h5>
-                         <p class="card-text">${metadata.description}</p>
-                         <a href="#" class="btn btn-primary">Go somewhere</a>
-                    </div>
-                    </div>
-                    
-                    `
-                    tableofnfts.innerHTML+=content;
-                })
-            }
-
-        }
-        fixURl=(url)=>{
-            if(url.startsWith("ipfs")){
-                return "http://ipfs.moralis.io:2053/ipfs/" +url.split("ipfs://").slice(-1)
-            }
-            else{
-                return url + "?format=json";
-            }
-        }
+        
         millisecondsToTime = (ms) => {
             let minutes = Math.floor(ms / (100 * 60));
             let hours = Math.floor(ms / (1000 * 60 * 60));
@@ -147,7 +81,79 @@ getTransactions = async () => {
 
 
 }
+getBalances = async () => {
+    console.log("Get balances clicked");
+    const ethbalance = await Moralis.Web3API.account.getNativeBalance({ chain: "rinkeby" });
+    const ropstenbalance = await Moralis.Web3API.account.getNativeBalance({ chain: "ropsten" });
+    const rinkebybalance = await Moralis.Web3API.account.getNativeBalance({ chain: "rinkeby" });
+    console.log((ethbalance.balance / 1e18).toFixed(5) + "ETH");
+    console.log((ropstenbalance.balance / 1e18).toFixed(5) + "ETH");
+    console.log((rinkebybalance.balance / 1e18).toFixed(5) + "ETH");
 
+    let content = document.querySelector('#userBalances').innerHTML = `
+    <table class="table">
+    <thead>
+    <tr>
+      <th scope ="col">Chain</th>
+      <th scope ="col">Balance</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <tr>
+            <th>Ether</th>
+            <td>${(ethbalance.balance / 1e18).toFixed(5)} ETH</td>
+        </tr>
+        <tr>
+            <th>Ropsten</th>
+            <td>${(ropstenbalance.balance / 1e18).toFixed(5)} ETH</td>
+        </tr>
+        <tr>
+            <th>Rinkeby</th>
+            <td>${(rinkebybalance.balance / 1e18).toFixed(5)} ETH</td>
+        </tr>
+    </tr>
+    </tbody>
+  </table>            `
+}
+getNFTs = async () => {
+    console.log('get nfts clicked');
+    let nfts = await Moralis.Web3API.account.getNFTs({ chain: "rinkeby" })
+    console.log(nfts)
+    let tableofnfts= document.querySelector("#tableofnfts")
+    if (nfts.result.length > 0) {
+        nfts.result.forEach(n => {
+            console.log(n)
+            console.log(n.metadata)
+            let metadata = JSON.parse(n.metadata)
+            console.log(metadata)
+             //console.log(n)
+             console.log(metadata.image)
+           // console.log(metadata.Name)
+            // console.log(n.metadata.image)
+            let content = `
+            <div class="card col-md-3" >
+            <img src="${(n.metadata.image)}" class="card-img-top">
+            <div class="card-body">
+                 <h5 class="card-title">${metadata.Name}</h5>
+                 <p class="card-text">${metadata.description}</p>
+            </div>
+            </div>
+            
+            `
+            tableofnfts.innerHTML+=content;
+        })
+    }
+
+}
+fixURl=(url)=>{
+    if(url.startsWith("ipfs")){
+        return "http://ipfs.moralis.io:2053/ipfs/" +url.split("ipfs://").slice(-1)
+    }
+    else{
+        return url + "?format=json";
+    }
+}
 if (document.querySelector('#btn-login') != null) {
     document.querySelector('#btn-login').onclick = login;
 }
